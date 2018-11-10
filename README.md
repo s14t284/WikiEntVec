@@ -30,9 +30,9 @@ Pre-trained vectors are trained under the configurations below (see Manual train
 
 #### Japanese
 
-|Option       |Value  |
-|:------------|:------|
-|`--tokenizer`|`mecab`|
+|Option       |Value             |
+|:------------|:-----------------|
+|`--tokenizer`|`mecab`, or `char`|
 
 <!-- #### English
 

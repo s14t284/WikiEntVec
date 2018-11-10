@@ -12,7 +12,7 @@ import tokenizers
 
 
 logging.basicConfig(level=logging.INFO, datefmt='%m/%d %H:%M:%S',
-    format='[%(asctime)s] %(levelname)s: %(message)s')
+                    format='[%(asctime)s] %(levelname)s: %(message)s')
 
 regex_spaces = re.compile(r'\s+')
 regex_hyperlink = re.compile(r'\[\[([^:]+?)\]\]')
@@ -25,7 +25,8 @@ def main():
                         help='Wikipedia Cirrussearch dump file (.json.gz)')
     parser.add_argument('out_file', type=str,
                         help='output corpus file (.txt.bz2)')
-    parser.add_argument('--tokenizer', choices=('regexp', 'nltk', 'mecab'),
+    # --tokenizer char optionを追加
+    parser.add_argument('--tokenizer', choices=('regexp', 'nltk', 'mecab', 'char'),
                         default='regexp',
                         help='type of tokenizer [regexp]')
     parser.add_argument('--lower', action='store_true',
@@ -42,7 +43,7 @@ def main():
     elif args.tokenizer == 'nltk':
         logging.info('tokenizer: NLTKTokenizer')
         tokenizer = tokenizers.NLTKTokenizer(lower=args.lower)
-    elif args.tokenizer == 'mecab':
+    elif args.tokenizer in ['mecab', 'char']:
         logging.info('tokenizer: MeCabTokenizer')
         logging.info(f'dictionary: {args.mecab_dic}')
         logging.info(f'user dictionary: {args.mecab_udic}')
@@ -54,7 +55,7 @@ def main():
     logging.info('generating corpus for training')
     n_processed = 0
     with gzip.open(args.cirrus_file, 'rt') as fi, \
-         bz2.open(args.out_file, 'wt') as fo:
+            bz2.open(args.out_file, 'wt') as fo:
         for line in fi:
             article = json.loads(line)
             if 'title' not in article:
@@ -92,9 +93,22 @@ def main():
 
             for (idx, hyperlink) in enumerate(hyperlinks_sorted.items()):
                 (anchor, entity) = hyperlink
+                # 通常の単語との区別をされないように変更
+                entity = anchor if '(' in entity else entity
                 idx_token = f'__{idx}__'
-                hyperlink_token = f'[{entity}]'.replace(' ', '_')
+                # マークアップを施さないように変更
+                hyperlink_token = f'{entity}'.replace(' ', '')
+                hyperlink_token = ' '.join(tokenizer.tokenize(
+                    hyperlink_token, preserving_pattern=regex_entity_token))
                 text = text.replace(idx_token, hyperlink_token)
+
+            # additional shaping
+            #   - 注釈の"^"を削除
+            #   - 文字単位での文の分割
+            text = re.sub(r'\s\^', '', text)
+            if args.tokenizer == 'char':
+                tmp = filter(lambda a: a != ' ', list(text))
+                text = ' '.join(tmp)
 
             print(text, file=fo)
             n_processed += 1
