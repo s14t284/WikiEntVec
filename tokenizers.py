@@ -3,7 +3,9 @@ import re
 
 regex_entity = re.compile(r'<ENT>(.+?)</ENT>')
 
+
 class Tokenizer(object):
+
     def __init__(self, lower):
         self._lower = lower
 
@@ -18,8 +20,8 @@ class Tokenizer(object):
                 tokens = self._tokenize(text)
         else:
             tokens = []
-            matched_strings = [match.group(0) \
-                for match in preserving_pattern.finditer(text)]
+            matched_strings = [match.group(0)
+                               for match in preserving_pattern.finditer(text)]
 
             for (snippet, matched_string) in zip(
                     preserving_pattern.split(text), matched_strings + [None]):
@@ -35,6 +37,7 @@ class Tokenizer(object):
 
 
 class RegExpTokenizer(Tokenizer):
+
     def __init__(self, pattern=r'\w+|\S', lower=False):
         super(RegExpTokenizer, self).__init__(lower)
         self._regex = re.compile(pattern)
@@ -46,6 +49,7 @@ class RegExpTokenizer(Tokenizer):
 
 
 class NLTKTokenizer(Tokenizer):
+
     def __init__(self, lower=False):
         super(NLTKTokenizer, self).__init__(lower)
         from nltk import word_tokenize
@@ -56,6 +60,7 @@ class NLTKTokenizer(Tokenizer):
 
 
 class MeCabTokenizer(Tokenizer):
+
     def __init__(self, dic=None, udic=None, lower=False):
         super(MeCabTokenizer, self).__init__(lower)
         import MeCab

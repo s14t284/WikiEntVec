@@ -8,37 +8,37 @@ from gensim.models.word2vec import LineSentence, Word2Vec
 
 
 logging.basicConfig(level=logging.INFO, datefmt='%m/%d %H:%M:%S',
-    format='[%(asctime)s] %(levelname)s: %(message)s')
+                    format='[%(asctime)s] %(levelname)s: %(message)s')
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('corpus_file', type=str,
-        help='corpus file')
+                        help='corpus file')
     parser.add_argument('out_dir', type=str,
-        help='output directory to store embedding files')
+                        help='output directory to store embedding files')
     parser.add_argument('--size', type=int, default=100,
-        help='size of word vectors [100]')
+                        help='size of word vectors [100]')
     parser.add_argument('--window', type=int, default=5,
-        help='maximum window size [5]')
+                        help='maximum window size [5]')
     parser.add_argument('--mode', choices=('cbow', 'sg'), default='cbow',
-        help='training algorithm: '
-             '"cbow" (continuous bag of words) or "sg" (skip-gram) [cbow]')
+                        help='training algorithm: '
+                        '"cbow" (continuous bag of words) or "sg" (skip-gram) [cbow]')
     parser.add_argument('--loss', choices=('ns', 'hs'), default='ns',
-        help='loss function: '
-             '"ns" (negative sampling) or "hs" (hierarchical softmax) [ns]')
+                        help='loss function: '
+                        '"ns" (negative sampling) or "hs" (hierarchical softmax) [ns]')
     parser.add_argument('--sample', type=float, default=1e-3,
-        help='threshold of frequency of words to be down-sampled [1e-3]')
+                        help='threshold of frequency of words to be down-sampled [1e-3]')
     parser.add_argument('--negative', type=int, default=5,
-        help='number of negative examples [5]')
+                        help='number of negative examples [5]')
     parser.add_argument('--threads', type=int, default=2,
-        help='number of worker threads to use for training [2]')
+                        help='number of worker threads to use for training [2]')
     parser.add_argument('--iter', type=int, default=5,
-        help='number of iterations in training [5]')
+                        help='number of iterations in training [5]')
     parser.add_argument('--min_count', type=int, default=5,
-        help='discard all words with total frequency lower than this [5]')
+                        help='discard all words with total frequency lower than this [5]')
     parser.add_argument('--alpha', type=float, default=0.025,
-        help='initial learning rate [0.025]')
+                        help='initial learning rate [0.025]')
     args = parser.parse_args()
 
     if not Path(args.out_dir).exists():
