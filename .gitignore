@@ -106,3 +106,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# additional ignore formats
+*.json.gz
+*.txt.bz2
+*.txt
+!requirements.txt
+*.sh
